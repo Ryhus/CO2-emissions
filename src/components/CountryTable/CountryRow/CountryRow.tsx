@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DetailedCountryTable } from '@/components/DetailedCountryTable';
 
 import './CountryRowStyles.scss';
 
@@ -35,7 +36,7 @@ export default function CountryRow({
         <td>{data.at(-1)?.population}</td>
         <td>{iso_code}</td>
       </tr>
-      {isOpenedRow && <div>Some other content</div>}
+      {isOpenedRow && <DetailedCountryTable data={data} />}
     </>
   );
 }
