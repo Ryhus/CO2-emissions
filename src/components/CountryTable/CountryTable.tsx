@@ -1,3 +1,5 @@
+import { CountryRow } from './CountryRow';
+
 import './CountryTable.scss';
 
 const data = {
@@ -39,14 +41,14 @@ export default function CountryListStyles() {
   const countryData = Object.entries(data).map((countryArr) => {
     const [country, { iso_code, data }] = countryArr;
 
-    const row = (
-      <tr key={country}>
-        <td>{country}</td>
-        <td>{data.at(-1)?.population}</td>
-        <td>{iso_code}</td>
-      </tr>
+    return (
+      <CountryRow
+        key={country}
+        country={country}
+        iso_code={iso_code}
+        data={data}
+      />
     );
-    return row;
   });
 
   return (
