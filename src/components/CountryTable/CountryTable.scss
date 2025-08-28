@@ -1,0 +1,28 @@
+.country-table {
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  text-align: center;
+  gap: 0.5rem;
+
+  thead {
+    font-size: 1.5rem;
+    tr {
+      display: flex;
+      gap: 5rem;
+    }
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    tr {
+      display: flex;
+      column-gap: 5rem;
+      justify-content: space-between;
+      font-size: 1.2rem;
+    }
+  }
+}
