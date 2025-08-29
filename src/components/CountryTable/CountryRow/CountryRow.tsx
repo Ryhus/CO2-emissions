@@ -1,17 +1,10 @@
-import { useState } from 'react';
-import { DetailedCountryTable } from '@/components/DetailedCountryTable';
-
+import type { EmissionEntry } from '@/utils/emissionsData';
 import './CountryRowStyles.scss';
 
 interface CountryRowProps {
   country: string;
   iso_code: string;
-  data: {
-    year?: number;
-    population?: number;
-    cement_co2?: number;
-    cement_co2_per_capita?: number;
-  }[];
+  data: EmissionEntry[];
 }
 
 export default function CountryRow({
@@ -19,24 +12,13 @@ export default function CountryRow({
   iso_code,
   data,
 }: CountryRowProps) {
-  const [isOpenedRow, setOpenedRow] = useState(false);
-
   return (
     <>
       <tr key={country}>
-        <td>
-          <button
-            className="open-detailed-country-bttn"
-            onClick={() => setOpenedRow(!isOpenedRow)}
-          >
-            {isOpenedRow ? '▾' : '▸'}
-          </button>
-          {country}
-        </td>
+        <td>{country}</td>
         <td>{data.at(-1)?.population}</td>
         <td>{iso_code}</td>
       </tr>
-      {isOpenedRow && <DetailedCountryTable data={data} />}
     </>
   );
 }

@@ -1,0 +1,21 @@
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &__input,
+  &__select,
+  &__button {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  &__button {
+    cursor: pointer;
+    background: #f5f5f5;
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+}

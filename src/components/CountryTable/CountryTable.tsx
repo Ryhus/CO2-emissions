@@ -1,44 +1,24 @@
 import { CountryRow } from './CountryRow';
 
-import './CountryTable.scss';
+import type { EmissionsData } from '@/utils/emissionsData';
 
-const data = {
-  Afganistan: {
-    iso_code: 'AFG',
-    data: [
-      {
-        year: 1750,
-        population: 2802560,
-        cement_co2: 0.0,
-      },
-      {
-        year: 1751,
-        population: 2802560,
-        cement_co2: 0.0,
-        cement_co2_per_capita: 0.0,
-      },
-    ],
-  },
-  Germany: {
-    iso_code: 'GE',
-    data: [
-      {
-        year: 1750,
-        population: 2802,
-        cement_co2: 0.0,
-      },
-      {
-        year: 1751,
-        population: 2802,
-        cement_co2: 0.0,
-        cement_co2_per_capita: 0.0,
-      },
-    ],
-  },
-};
+import './CountryTableStyles.scss';
 
-export default function CountryListStyles() {
-  const countryData = Object.entries(data).map((countryArr) => {
+interface CountryTableProps {
+  emissionsData: EmissionsData;
+}
+
+export default function CountryTable({ emissionsData }: CountryTableProps) {
+  const defaultColumns = [
+    'ISO',
+    'COUNTY',
+    'POPULATION',
+    'YEAR',
+    'CO2',
+    'CO2_PER_CAPITA',
+  ];
+
+  const countryData = Object.entries(emissionsData).map((countryArr) => {
     const [country, { iso_code, data }] = countryArr;
 
     return (
@@ -55,9 +35,9 @@ export default function CountryListStyles() {
     <table className="country-table">
       <thead>
         <tr>
-          <th>Country</th>
-          <th>Population (latest)</th>
-          <th>ISO</th>
+          {defaultColumns.map((column) => (
+            <th key={column}>{column}</th>
+          ))}
         </tr>
       </thead>
       <tbody>{countryData}</tbody>
