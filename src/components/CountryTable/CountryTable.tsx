@@ -1,46 +1,108 @@
-import { CountryRow } from './CountryRow';
-
-import type { EmissionsData } from '@/utils/emissionsData';
+import { useRef, useEffect, useState, memo } from 'react';
+import { type CountryData } from '@/utils/types';
 
 import './CountryTableStyles.scss';
 
-interface CountryTableProps {
-  emissionsData: EmissionsData;
+interface TableProps {
+  data: [string, CountryData][];
+  selectedYear: number;
+  visibleColumns: string[];
 }
 
-export default function CountryTable({ emissionsData }: CountryTableProps) {
-  const defaultColumns = [
-    'ISO',
-    'COUNTY',
-    'POPULATION',
-    'YEAR',
-    'CO2',
-    'CO2_PER_CAPITA',
-  ];
+export default memo(function CountryTable({
+  data,
+  selectedYear,
+  visibleColumns,
+}: TableProps) {
+  const prevYearRef = useRef<number | null>(null);
+  const [highlighted, setHighlighted] = useState<Record<string, boolean>>({});
 
-  const countryData = Object.entries(emissionsData).map((countryArr) => {
-    const [country, { iso_code, data }] = countryArr;
+  const prevYear = prevYearRef.current;
 
-    return (
-      <CountryRow
-        key={country}
-        country={country}
-        iso_code={iso_code}
-        data={data}
-      />
-    );
-  });
+  useEffect(() => {
+    prevYearRef.current = selectedYear;
+  }, [selectedYear]);
+
+  useEffect(() => {
+    if (!data.length || prevYear === null) return;
+
+    const newHighlights: Record<string, boolean> = {};
+
+    data.forEach(([country, countryData]) => {
+      const current =
+        countryData.data.find((d) => d.year === selectedYear) ??
+        countryData.data.at(-1) ??
+        null;
+
+      const prev = countryData.data.find((d) => d.year === prevYear) ?? null;
+
+      if (!current || !prev) return;
+
+      visibleColumns.forEach((col) => {
+        if (
+          prev[col as keyof typeof prev] !==
+          current[col as keyof typeof current]
+        ) {
+          newHighlights[`${country}-${col}`] = true;
+        }
+      });
+    });
+
+    setHighlighted(newHighlights);
+
+    const timer = setTimeout(() => setHighlighted({}), 1000);
+    return () => clearTimeout(timer);
+  }, [data, selectedYear, prevYear, visibleColumns]);
 
   return (
-    <table className="country-table">
-      <thead>
-        <tr>
-          {defaultColumns.map((column) => (
-            <th key={column}>{column}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{countryData}</tbody>
-    </table>
+    <div className="table-wrapper">
+      <table className="country-table">
+        <thead>
+          <tr>
+            <th>COUNTRY</th>
+            <th>ISO</th>
+            <th>YEAR</th>
+            {visibleColumns.map((col) => (
+              <th key={col}>{col.toUpperCase()}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map(([country, countryData]) => {
+            const current =
+              countryData.data.find((d) => d.year === selectedYear) ??
+              countryData.data.at(-1) ??
+              null;
+
+            if (!current) {
+              return null;
+            }
+
+            return (
+              <tr key={country}>
+                <td>{country ?? 'N/A'}</td>
+                <td>{countryData.iso_code ?? 'N/A'}</td>
+                <td>{current.year ?? 'N/A'}</td>
+
+                {visibleColumns.map((col) => (
+                  <td
+                    key={col}
+                    className={
+                      highlighted[`${country}-${col}`] ? 'highlight' : ''
+                    }
+                  >
+                    {typeof current[col as keyof typeof current] === 'number'
+                      ? (
+                          current[col as keyof typeof current] as number
+                        ).toLocaleString()
+                      : (current[col as keyof typeof current] ?? 'N/A')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
-}
+});

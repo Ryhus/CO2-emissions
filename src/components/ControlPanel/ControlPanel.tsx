@@ -1,38 +1,42 @@
+import { memo } from 'react';
+
 import './ControlPanel.scss';
 
-interface ControlsProps {
+interface ControlPanelProps {
   search: string;
-  setSearch: (val: string) => void;
+  onSearchChange: (val: string) => void;
   year: number;
-  setYear: (val: number) => void;
+  onYearChange: (val: number) => void;
   years: number[];
-  sortAsc: boolean;
-  setSortAsc: (val: boolean) => void;
+  sortField: 'name' | 'population';
+  onSortFieldChange: (val: 'name' | 'population') => void;
+  sortOrder: 'asc' | 'desc';
+  onSortOrderChange: (val: 'asc' | 'desc') => void;
 }
 
-export default function ControlPanel({
+export default memo(function ControlPanel({
   search,
-  setSearch,
+  onSearchChange,
   year,
-  setYear,
+  onYearChange,
   years,
-  sortAsc,
-  setSortAsc,
-}: ControlsProps) {
+  sortField,
+  onSortFieldChange,
+  sortOrder,
+  onSortOrderChange,
+}: ControlPanelProps) {
   return (
-    <div className="controls">
+    <div className="control-panel">
       <input
         type="text"
-        placeholder="Search country..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="controls__input"
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Search country..."
       />
 
       <select
         value={year}
-        onChange={(e) => setYear(Number(e.target.value))}
-        className="controls__select"
+        onChange={(e) => onYearChange(Number(e.target.value))}
       >
         {years.map((y) => (
           <option key={y} value={y}>
@@ -41,9 +45,23 @@ export default function ControlPanel({
         ))}
       </select>
 
-      <button onClick={() => setSortAsc(!sortAsc)} className="controls__button">
-        Sort by Population {sortAsc ? '↑' : '↓'}
-      </button>
+      <select
+        value={sortField}
+        onChange={(e) =>
+          onSortFieldChange(e.target.value as 'name' | 'population')
+        }
+      >
+        <option value="name">Sort by Country Name</option>
+        <option value="population">Sort by Population</option>
+      </select>
+
+      <select
+        value={sortOrder}
+        onChange={(e) => onSortOrderChange(e.target.value as 'asc' | 'desc')}
+      >
+        <option value="asc">Ascending ↑</option>
+        <option value="desc">Descending ↓</option>
+      </select>
     </div>
   );
-}
+});
